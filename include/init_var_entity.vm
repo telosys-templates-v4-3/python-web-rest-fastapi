@@ -1,0 +1,15 @@
+## Standard common variables for the current entity
+#set($entLC   = $entity.name.toLowerCase() )
+#set($ent     = $entity.name.toLowerCase() )
+#set($entType = $entity.name )
+## Domain
+#set($service     = "${entLC}_service" )
+#set($serviceType = "${entity.name}Service" )
+## REST 
+#set($dto      = "${entLC}_dto"      )
+#set($dtoType  = "${entity.name}Dto"     )
+## Database persistence/ORM
+#set($record     = "${entLC}_record" )
+#set($recordType = "${entity.name}Record" )
+#set($repository     = "${entLC}_repository" )
+#set($repositoryType = "${entity.name}Repository" )

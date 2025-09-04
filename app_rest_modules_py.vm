@@ -1,0 +1,10 @@
+#set( $env.language = 'Python' )
+# List of rest modules to be initialized
+# Created on $today.date ( Time $today.time )
+
+#foreach( $entity in $selectedEntities )
+from rest.${entity.name}_resource import *
+#end
+
+def init():
+    print("REST modules initialization")
