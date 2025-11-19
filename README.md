@@ -6,6 +6,18 @@ This bundle provides templates to generate a REST controller for each entity.
 
 To launch the server after code generation, run "fastapi dev main.py"
 
+## This bundle in short
+- Target language: **Python** (with type hints)  
+- Layers:  
+  - Domain  
+  - REST  
+  - DB/ORM  
+- Technical stack:  
+  - Validation: **Pydantic**     
+  - REST: **FastAPI**  
+  - ORM: **SQLAlchemy**   
+  - Database: **PostgreSQ**  
+
 ## Requirements : 
 - Telosys ver 4.3.0 or +
 
@@ -27,4 +39,5 @@ For PostgreSQL a driver is needed :
 ## Launching the application with Uvicorn
 > fastapi dev main.py
 Server URL: http://127.0.0.1:8000
-API docs:   http://127.0.0.1:8000/docs 
+API docs:   http://127.0.0.1:8000/docs
+
