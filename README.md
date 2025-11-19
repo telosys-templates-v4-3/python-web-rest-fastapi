@@ -16,7 +16,7 @@ To launch the server after code generation, run "fastapi dev main.py"
   - Validation: **Pydantic**     
   - REST: **FastAPI**  
   - ORM: **SQLAlchemy**   
-  - Database: **PostgreSQ**  
+  - Database: **PostgreSQL**  
 
 ## Requirements : 
 - Telosys ver 4.3.0 or +
