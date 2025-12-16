@@ -6,8 +6,22 @@ This bundle provides templates to generate a REST controller for each entity.
 
 To launch the server after code generation, run "fastapi dev main.py"
 
+## This bundle in short
+- Target language: **Python** (with type hints)  
+- Layers:  
+  - Domain  
+  - REST  
+  - DB/ORM  
+- Technical stack:  
+  - Validation: **Pydantic**     
+  - REST: **FastAPI**  
+  - ORM: **SQLAlchemy**   
+  - Database: **PostgreSQL**  
+
+
 ## Requirements : 
 - Telosys ver 4.3.0 or +
+
 
 ## Variables : 
 This bundle requires the following variables :
