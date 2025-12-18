@@ -8,15 +8,25 @@ To launch the server after code generation, run "fastapi dev main.py"
 
 ## This bundle in short
 - Target language: **Python** (with type hints)  
-- Layers:  
-  - Domain  
-  - REST  
-  - DB/ORM  
+- Layers:  REST - Domain - Database (ORM)
 - Technical stack:  
   - Validation: **Pydantic**     
   - REST: **FastAPI**  
   - ORM: **SQLAlchemy**   
   - Database: **PostgreSQL**  
+
+## Project structure generated 
+- db/
+  - records/
+  - repositories/
+- domain/
+  - model/
+  - services/
+- rest/
+  - dto/
+  - routers/
+- main.py
+
 
 
 ## Requirements : 
@@ -39,6 +49,6 @@ For PostgreSQL a driver is needed :
 
 
 ## Launching the application with Uvicorn
-> fastapi dev main.py
-Server URL: http://127.0.0.1:8000
-API docs:   http://127.0.0.1:8000/docs 
+> fastapi dev main.py  
+> Server URL: http://127.0.0.1:8000  
+> API docs:   http://127.0.0.1:8000/docs   
