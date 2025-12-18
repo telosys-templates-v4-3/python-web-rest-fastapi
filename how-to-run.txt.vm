@@ -1,0 +1,30 @@
+
+How to run the REST server 
+
+-----------------------------------------------
+
+In development:
+
+With the default port (8000)
+> fastapi dev main.py
+
+With a custom port:
+> fastapi dev main.py --port 8080
+
+This is the official FastAPI development command (FastAPI ≥ 0.100).
+It uses Uvicorn under the hood.
+ With:
+ - Auto-reload on code changes
+ - Better error messages
+ - Automatic detection of your app
+ - Cleaner DX (developer experience)
+ - Sensible defaults (reload, debug, logs)
+
+-----------------------------------------------
+
+In production:
+
+> uvicorn main:app --host 0.0.0.0 --port 8080
+
+For help:
+> uvicorn --help
