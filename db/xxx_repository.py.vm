@@ -9,7 +9,7 @@
 from sqlalchemy.orm import Session
 from typing import Optional, List
 
-from db.${entLC}_record import ${recordType}
+from db.records.${entLC}_record import ${recordType}
 from domain.model.${entLC} import ${entity.name}
 
 class ${repositoryType}:
