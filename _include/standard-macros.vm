@@ -29,3 +29,47 @@ $__#if ( $uuid == true )
 from uuid import UUID
 $__#end
 #end
+## --- Mapping 'model-type' to 'SQLAlchemy-type'
+## always use 'Integer' (not 'SmallInteger' and not 'BigInteger')
+#set( $ormTypes = {
+  "binary"     : "LargeBinary" , 
+  "boolean"    : "Boolean" , 
+  "byte"       : "Integer" , 
+  "date"       : "Date" , 
+  "datetime"   : "DateTime" , 
+  "datetimetz" : "DateTime(timezone=True)" , 
+  "decimal"    : "Numeric" , 
+  "double"     : "Float" , 
+  "float"      : "Float" , 
+  "int"        : "Integer" , 
+  "long"       : "Integer" , 
+  "short"      : "Integer" , 
+  "string"     : "String" ,   
+  "time"       : "Time" , 
+  "timetz"     : "Time(timezone=True)" , 
+  "timestamp"  : "DateTime",
+  "uuid"       : "UUID" } ) 
+## String or String(length) or Unicode(length)
+## UUID or CHAR(32) / String(36) if UUID not supported by the database
+## NB: For SQLite use "String(36)" instead of "UUID" (not supported)
+#macro( setAttributeOrmType $attribute )
+## $__#set( $attributeOrmType = 'zzz')
+$__#set( $attributeOrmType = $ormTypes[${attribute.neutralType}])
+$__#if ( $attributeOrmType == "UUID" )## keep 'UUID' or convert to 'String(36)' depending on target database
+$____#set( $sqlType = $fn.toLowerCase($sql.columnType($attribute)) )
+$____#if ( $sqlType.startsWith("char")  || $sqlType.startsWith("varchar")  || $sqlType.startsWith("text")  )
+$______#set( $attributeOrmType = "String(36)")## Store UUID as a string
+$____#end
+$__#end
+#end
+## SQL Alchemy types required in import
+#macro( sqlalchemyImport $attributes )
+$__#set( $sqlalchemyTypes = $loader.newInstance("java.util.HashSet") )
+$__#foreach($attribute in $attributes)
+$____#setAttributeOrmType($attribute)
+$____#set( $parts = $attributeOrmType.split('\(') )
+$____#set( $ormBasicType = $parts[0] )
+$____#set( $unused = $sqlalchemyTypes.add( $parts[0] ) )
+$__#end
+from sqlalchemy import Column, $fn.join($sqlalchemyTypes, ', ')
+#end

@@ -1,5 +1,6 @@
 #set( $env.language = 'Python' )
 #parse("_include/standard-variables.vm")
+#parse("_include/standard-macros.vm")
 #parse("_include/standard-python-header.vm")
 # Database record for entity ${entity.name} (used by SqlAchemy ORM)
 ## --- Database type
@@ -8,6 +9,7 @@
 #set( $sql = $env.sql )
 ## --- Mapping 'model-type' to 'SQLAlchemy-type'
 ## always use 'Integer' (not 'SmallInteger' and not 'BigInteger')
+#*
 #set( $ormTypes = {
   "binary"     : "LargeBinary" , 
   "boolean"    : "Boolean" , 
@@ -26,11 +28,12 @@
   "timetz"     : "Time(timezone=True)" , 
   "timestamp"  : "DateTime",
   "uuid"       : "UUID" } ) 
+*#
 ## String or String(length) or Unicode(length)
 ## UUID or CHAR(32) / String(36) if UUID not supported by the database
 ## NB: For SQLite use "String(36)" instead of "UUID" (not supported)
 
-#basicImports($entity.keyAttributes)
+#sqlalchemyImport($entity.attributes)
 ##--- ALL SqlAlchemy types 
 ## from sqlalchemy import ( Column,
 ##    Integer, SmallInteger, BigInteger, Float, Numeric, Boolean,
@@ -38,7 +41,7 @@
 ##    Date, Time, DateTime, 
 ##    LargeBinary, UUID, Sequence
 ##)
-from sqlalchemy.orm import declarative_base
+## from sqlalchemy.orm import declarative_base
 ## 
 ## Base = declarative_base()
 ## (moved in db_session)
@@ -74,14 +77,6 @@ $__#end
 #if( $attribute.isKeyElement() )
 $__#set( $more = "${more}, primary_key=True" )
 #end
-## --- Type and SQL type
-#set( $type = $ormTypes[${attribute.neutralType}])
-#set( $sqlType = $fn.toLowerCase($sql.columnType($attribute)) )
-## --- UUID
-#if ( $type == "UUID" )
-$__#if ( $sqlType.startsWith("char")  || $sqlType.startsWith("varchar")  || $sqlType.startsWith("text")  )
-$____#set( $type = "String(36)")## Store UUID as a string
-$__#end
-#end
-    ${attribute.name} = Column("${attribute.sqlColumnName}", ${type}${more} ) # $sql.databaseName type "$attribute.sqlColumnType"
+#setAttributeOrmType($attribute)
+    ${attribute.name} = Column("${attribute.sqlColumnName}", ${attributeOrmType}${more} ) # $sql.databaseName type "$attribute.sqlColumnType"
 #end##foreach
