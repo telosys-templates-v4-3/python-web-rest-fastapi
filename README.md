@@ -28,7 +28,6 @@ To launch the server after code generation, run "fastapi dev main.py"
 - main.py
 
 
-
 ## Requirements : 
 - Telosys ver 4.3.0 or +
 
@@ -37,6 +36,14 @@ To launch the server after code generation, run "fastapi dev main.py"
 This bundle requires the following variables :
 - REST_URL_ROOT ( example : `ProjectVariable.REST_URL_ROOT=http://localhost:3000 ` )
 - REST_API_ROOT ( example : `ProjectVariable.REST_API_ROOT=/api/v1  ` )
+- For a PostgreSQL database:
+  - DB_SCHEMA
+  - DB_USER
+  - DB_PASSWORD
+  - DB_HOST
+  - DB_PORT
+  - DB_NAME
+
 
 
 ## Dependencies : 

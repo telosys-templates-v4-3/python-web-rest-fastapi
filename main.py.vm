@@ -3,7 +3,7 @@
 # Web app entry point 
 
 import logging
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, APIRouter
 ## from sqlalchemy import create_engine
 ## from sqlalchemy.orm import sessionmaker, Session
 
@@ -21,48 +21,48 @@ logger = logging.getLogger(__name__)
 
 logger.info("Starting application")
 
+# Enable SQLAlchemy SQL logging only for schema (DDL)
+logging.getLogger("sqlalchemy.schema").setLevel(logging.INFO)
+# Enable SQLAlchemy SQL logging for all SQL statements (DDL + DML)
+# logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
+
+# --- DATABASE initialization 
 print(Base.metadata.tables.keys())
 print("--- SQLAlchemy : create_all(engine)...")
+# create_all(engine): Just for development tests
+# For every table registered in Base.metadata, create it in the database if it does not already exist
+# . Creates missing tables
+# . Does not drop existing tables 
+# . Does not update or migrate schemas
+# . Does not delete columns
 Base.metadata.create_all(engine)
 print("--- SQLAlchemy : create_all(engine) - Done.")
 
-#*
-# Database and SQLAlchemy 
-DATABASE_URL = "sqlite:///./brands.db"
-
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-*#
-
+# --- REST API application and routers 
 # FastAPI application variable ("app" by convention)
 app = FastAPI(
     title = "My REST API application",
     description = "REST API application based on FastAPI.",
     version = "0.0.1"
 )
-#*
-# Dependency to get DB session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-*#
+# Remark: 
+#  In FastAPI, the HTTP listening port is not defined in the Python code.
+#  It is defined by the ASGI server used to run the app (usually Uvicorn or Gunicorn)
 
-# FastAPI application sub-routers 
+# FastAPI - main router (defines the global API prefix)
+api_router = APIRouter(prefix="$fn.get('REST_API_ROOT', '/api/v1' )")
+# FastAPI - sub-routers 
 #foreach( $entity in $model.allEntites )
 #set($entLC = $entity.name.toLowerCase() )
-app.include_router(${entLC}_router, prefix="/${entLC}", tags=["${entLC}"])
+api_router.include_router(${entLC}_router, prefix="/${entLC}", tags=["${entLC}"])
 #end
+# FastAPI - include the main router in the app
+app.include_router(api_router)
 
 # Default basic endpoints
+@api_router.get("/")
+def rest_api_root():
+    return {"message": "REST API ready"}
 @app.get("/")
-def read_root():
+def global_root():
     return {"message": "Application ready"}
-
-@app.get("/headers/")
-async def get_all_headers(request: Request):
-    headers = request.headers  # This returns a 'Headers' object
-    accept = headers.get("accept")
-    return {"headers": dict(headers), "accept": accept}  # Convert to a dictionary for JSON serialization
