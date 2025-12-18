@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 
 from domain.model.${entLC} import ${entity.name}
 from db.db_session import get_db
-from db.${entLC}_repository import $repositoryType
+from db.repositories.${entLC}_repository import $repositoryType
 
 class $serviceType:
     # Dependency injection to provide the $repositoryType to the $serviceType
