@@ -31,12 +31,13 @@
 ## NB: For SQLite use "String(36)" instead of "UUID" (not supported)
 
 #basicImports($entity.keyAttributes)
-from sqlalchemy import ( Column,
-    Integer, SmallInteger, BigInteger, Float, Numeric, Boolean,
-    String, Text, CHAR, Unicode, UnicodeText,
-    Date, Time, DateTime, 
-    LargeBinary, UUID, Sequence
-)
+##--- ALL SqlAlchemy types 
+## from sqlalchemy import ( Column,
+##    Integer, SmallInteger, BigInteger, Float, Numeric, Boolean,
+##    String, Text, CHAR, Unicode, UnicodeText,
+##    Date, Time, DateTime, 
+##    LargeBinary, UUID, Sequence
+##)
 from sqlalchemy.orm import declarative_base
 ## 
 ## Base = declarative_base()
@@ -82,5 +83,5 @@ $__#if ( $sqlType.startsWith("char")  || $sqlType.startsWith("varchar")  || $sql
 $____#set( $type = "String(36)")## Store UUID as a string
 $__#end
 #end
-    ${attribute.name} = Column("${attribute.sqlColumnName}", ${type}${more} ) # $sql.databaseName type "${sqlType}"
+    ${attribute.name} = Column("${attribute.sqlColumnName}", ${type}${more} ) # $sql.databaseName type "$attribute.sqlColumnType"
 #end##foreach
