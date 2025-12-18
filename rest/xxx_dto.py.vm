@@ -1,5 +1,6 @@
 #set( $env.language = 'Python' )
 #parse("_include/standard-variables.vm")
+#parse("_include/standard-macros.vm")
 #parse("_include/standard-python-header.vm")
 # REST DTO for entity ${entity.name} 
 #
@@ -10,54 +11,46 @@
 # Pydantic "Field" function is used to add metadata and validation constraints to model fields
 # with FastAPI this metadata is directly reflected in the OpenAPI documentation.
 
-#if ($entity.hasDecimalAttribute() )
-from decimal import Decimal   
-#end
-#if ($entity.hasTemporalAttribute() )
-from datetime import date, time, datetime
-#end
-#if ($entity.hasUuidAttribute() )
-from uuid import UUID
-#end
 from pydantic import BaseModel, Field
+#basicImports($entity.attributes)
 from domain.model.${entLC} import ${entity.name}
 
 class ${dtoType}(BaseModel):
 #foreach( $attribute in $entity.attributes )
-#set($comment    = "")
-#set($minLength  = "")
-#set($maxLength  = "")
-#set($ge  = "")
-#set($le  = "")
+$__#set($comment    = "")
+$__#set($minLength  = "")
+$__#set($maxLength  = "")
+$__#set($ge  = "")
+$__#set($le  = "")
 
-#if( $attribute.isNotNull() )
-#set($defaultOrRequired = "...")
-#set($comment = "# required")
-#else
-#set($defaultOrRequired = "default=None")
-#end
+$__#if( $attribute.isNotNull() )
+$____#set($defaultOrRequired = "...")
+$____#set($comment = "# required")
+$__#else
+$____#set($defaultOrRequired = "default=None")
+$__#end
 ## 
-#if ( $attribute.minLength != "" )
-#set($minLength = ", min_length=${attribute.minLength}")
-#end
-#if ( $attribute.maxLength != "" )
-#set($maxLength = ", max_length=${attribute.maxLength}")
-#end
-#if ( $attribute.minValue != "" )
-#set($ge = ", ge=${attribute.minValue}")
-#end
-#if ( $attribute.maxValue != "" )
-#set($le = ", le=${attribute.maxValue}")
-#end
+$__#if ( $attribute.minLength != "" )
+$____#set($minLength = ", min_length=${attribute.minLength}")
+$__#end
+$__#if ( $attribute.maxLength != "" )
+$____#set($maxLength = ", max_length=${attribute.maxLength}")
+$__#end
+$__#if ( $attribute.minValue != "" )
+$____#set($ge = ", ge=${attribute.minValue}")
+$__#end
+$__#if ( $attribute.maxValue != "" )
+$____#set($le = ", le=${attribute.maxValue}")
+$__#end
 ##    ${attribute.name}: ${attribute.type} = Field(default=None, title="${attribute.name}", description="")  # '...' => Required
 ##    ${attribute.name}: ${attribute.type} = Field(..., title="${attribute.name}", description="")  # '...' => Required
-#if ( $attribute.name == $attribute.type )
+$__#if ( $attribute.name == $attribute.type )
 ## If the attribute name ==  "type hint" (eg "date: date") a Pydantic error occurs when calling "Field()" => do not call it
     ${attribute.name}: ${attribute.type} # cannot use field due to same name and type $comment
-#else
+$__#else
 ## Standard case : no problem => use "Field()"
     ${attribute.name}: ${attribute.type} = Field(${defaultOrRequired}, title="${attribute.name}", description=""${minLength}${maxLength}${ge}${le})  $comment
-#end
+$__#end
 #end
 
 # DTO class to domain class conversion

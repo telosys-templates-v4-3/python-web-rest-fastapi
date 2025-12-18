@@ -1,28 +1,21 @@
 #set( $env.language = 'Python' )
+#parse("_include/standard-macros.vm")
 #parse("_include/standard-python-header.vm")
 # Domain dataclass for entity ${entity.name} 
 # Pydantic BaseModel is preferred to Python dataclass in order to offer automatic ORM conversion
 
+#basicImports($entity.attributes)
 from pydantic import BaseModel
-#if ($entity.hasDecimalAttribute() )
-from decimal import Decimal   
-#end
-#if ($entity.hasTemporalAttribute() )
-from datetime import date, time, datetime
-#end
-#if ($entity.hasUuidAttribute() )
-from uuid import UUID
-#end
 
 class ${entity.name}(BaseModel):
 #foreach( $attribute in $entity.attributes )
-#set( $pkComment = "")
-#if($attribute.isKeyElement()) 
-#set( $pkComment = "# Primary Key")
-#end
-#if($attribute.isGeneratedValue()) 
-#set( $pkComment = "${pkComment} # Generated Value (${attribute.generatedValueStrategy})")
-#end
+$__#set( $pkComment = "")
+$__#if($attribute.isKeyElement()) 
+$____#set( $pkComment = "# Primary Key")
+$__#end
+$__#if($attribute.isGeneratedValue()) 
+$____#set( $pkComment = "${pkComment} # Generated Value (${attribute.generatedValueStrategy})")
+$__#end
     ${attribute.name}: $attribute.type $pkComment
 #end
 

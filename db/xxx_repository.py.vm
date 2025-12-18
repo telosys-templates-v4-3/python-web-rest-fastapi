@@ -1,9 +1,11 @@
 #set( $env.language = 'Python' )
 #parse("_include/standard-variables.vm")
+#parse("_include/standard-macros.vm")
 #parse("_include/standard-python-header.vm")
 # Domain dataclass for entity ${entity.name} 
 #set($attributeNames = $fn.attributeNames($entity.attributes) )
 
+#basicImports($entity.keyAttributes)
 from sqlalchemy.orm import Session
 from typing import Optional, List
 
@@ -38,12 +40,12 @@ class ${repositoryType}:
     def create(self, ${entLC}: ${entity.name}) -> ${entity.name}:
         record = ${recordType}(
 #foreach( $attribute in $entity.attributes )
-#if( $foreach.hasNext )#set($end=",")#else#set($end="")#end
-#if ( $attribute.isGeneratedValue() )
+$__#if( $foreach.hasNext )#set($end=",")#else#set($end="")#end
+$__#if ( $attribute.isGeneratedValue() )
             # ${attribute.name} = 'generated value' (autoincrement or sequence) => do not use in INSERT 
-#else
+$__#else
             ${attribute.name}=${entLC}.${attribute.name}${end}
-#end
+$__#end
 #end
         )
         self.db.add(record)

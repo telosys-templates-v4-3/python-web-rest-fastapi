@@ -1,15 +1,16 @@
 #set( $env.language = 'Python' )
 #parse("_include/standard-variables.vm")
+#parse("_include/standard-macros.vm")
 #parse("_include/standard-python-header.vm")
 # REST ROUTER for entity ${entity.name} 
 #set($attributeNames = $fn.attributeNames($entity.attributes) )
 
+#basicImports($entity.keyAttributes)
 import logging
 ## from typing import List, Optional
 from typing import List
 ### from fastapi import APIRouter, Request, Response, Header, Query, Depends, status
 from fastapi import APIRouter, Response, Depends, status
-### from domain.model.${entLC} import ${entity.name}
 from domain.services.${service} import ${entity.name}Service, get_${entLC}_service
 from rest.dto.${dto} import ${dtoType}
 

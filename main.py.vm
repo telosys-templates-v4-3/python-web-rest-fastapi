@@ -4,8 +4,8 @@
 
 import logging
 from fastapi import FastAPI, Request
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+## from sqlalchemy import create_engine
+## from sqlalchemy.orm import sessionmaker, Session
 
 #foreach( $entity in $model.entities )
 #set($entLC = $entity.name.toLowerCase() )

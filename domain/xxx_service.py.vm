@@ -1,10 +1,12 @@
 #set( $env.language = 'Python' )
 #parse("_include/standard-variables.vm")
+#parse("_include/standard-macros.vm")
 #parse("_include/standard-python-header.vm")
 # Domain service for entity ${entity.name} 
 # The domain service contains business logic related to retrieving entities. 
 # It uses the repository to fetch the data.
 
+#basicImports($entity.keyAttributes)
 from typing import List, Optional
 from fastapi import Depends
 from sqlalchemy.orm import Session

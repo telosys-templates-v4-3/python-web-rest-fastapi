@@ -1,0 +1,31 @@
+## --- Standard macros definition 
+## Basic Python imports for Python classes (domain, dto, etc)
+#macro( basicImports $attributes )
+## 
+$__#set( $decimal = false )
+$__#set( $uuid = false )
+$__#set( $temporalTypes = $loader.newInstance("java.util.HashSet") )
+$__#foreach($attribute in $attributes)
+$____#if( $attribute.type == 'Decimal' )
+$______#set( $decimal = true )
+$____#end
+$____#if( $attribute.type == 'UUID' )
+$______#set( $uuid = true )
+$____#end
+$____#if( $attribute.isTemporalType() )
+$______#set( $unused = $temporalTypes.add($attribute.type) )
+$____#end
+$__#end
+## 
+$__#if ( $decimal == true )
+from decimal import Decimal   
+$__#end
+## 
+$__#if( ! $temporalTypes.isEmpty() )
+from datetime import $fn.join($temporalTypes, ', ')
+$__#end
+## 
+$__#if ( $uuid == true )
+from uuid import UUID
+$__#end
+#end
