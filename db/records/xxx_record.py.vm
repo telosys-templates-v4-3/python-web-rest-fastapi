@@ -1,7 +1,8 @@
 #set( $env.language = 'Python' )
 ## --- Database type
+#set($TARGET_DATABASE = $fn.get('TARGET_DATABASE', 'SQLite') )
 ## #set( $env.database = 'sqlite' )
-#set( $env.database = 'postgresql' )
+#set( $env.database = $TARGET_DATABASE )
 #parse("_include/standard-variables.vm")
 #parse("_include/standard-macros.vm")
 #parse("_include/standard-python-header.vm")
