@@ -7,9 +7,7 @@
 
 #basicImports($entity.keyAttributes)
 import logging
-## from typing import List, Optional
 from typing import List
-### from fastapi import APIRouter, Request, Response, Header, Query, Depends, status
 from fastapi import APIRouter, Response, Depends, status, HTTPException
 from domain.services.${service} import ${entity.name}Service, get_${entLC}_service
 from rest.dto.${dto} import ${dtoType}

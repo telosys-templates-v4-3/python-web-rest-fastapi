@@ -1,50 +1,14 @@
 #set( $env.language = 'Python' )
+## --- Database type
+## #set( $env.database = 'sqlite' )
+#set( $env.database = 'postgresql' )
 #parse("_include/standard-variables.vm")
 #parse("_include/standard-macros.vm")
 #parse("_include/standard-python-header.vm")
 # Database record for entity ${entity.name} (used by SqlAchemy ORM)
-## --- Database type
-## #set( $env.database = 'sqlite' )
-#set( $env.database = 'postgresql' )
 #set( $sql = $env.sql )
-## --- Mapping 'model-type' to 'SQLAlchemy-type'
-## always use 'Integer' (not 'SmallInteger' and not 'BigInteger')
-#*
-#set( $ormTypes = {
-  "binary"     : "LargeBinary" , 
-  "boolean"    : "Boolean" , 
-  "byte"       : "Integer" , 
-  "date"       : "Date" , 
-  "datetime"   : "DateTime" , 
-  "datetimetz" : "DateTime(timezone=True)" , 
-  "decimal"    : "Numeric" , 
-  "double"     : "Float" , 
-  "float"      : "Float" , 
-  "int"        : "Integer" , 
-  "long"       : "Integer" , 
-  "short"      : "Integer" , 
-  "string"     : "String" ,   
-  "time"       : "Time" , 
-  "timetz"     : "Time(timezone=True)" , 
-  "timestamp"  : "DateTime",
-  "uuid"       : "UUID" } ) 
-*#
-## String or String(length) or Unicode(length)
-## UUID or CHAR(32) / String(36) if UUID not supported by the database
-## NB: For SQLite use "String(36)" instead of "UUID" (not supported)
 
 #sqlalchemyImport($entity.attributes)
-##--- ALL SqlAlchemy types 
-## from sqlalchemy import ( Column,
-##    Integer, SmallInteger, BigInteger, Float, Numeric, Boolean,
-##    String, Text, CHAR, Unicode, UnicodeText,
-##    Date, Time, DateTime, 
-##    LargeBinary, UUID, Sequence
-##)
-## from sqlalchemy.orm import declarative_base
-## 
-## Base = declarative_base()
-## (moved in db_session)
 from db.db_session import Base
 
 class ${recordType}(Base):
@@ -55,28 +19,28 @@ class ${recordType}(Base):
     __tablename__ = "${entity.sqlTableName}"
 #end
 #foreach( $attribute in $entity.attributes )
-#set( $more = '' )
+$__#set( $more = '' )
 ## --- if autoIncremented
 ## #if( $attribute.isAutoIncremented() && ! $attribute.isKeyElement() )
-#if( $attribute.isAutoIncremented() )
+$__#if( $attribute.isAutoIncremented() )
 ## for PostgreSQL : do not use autoincrement for PK
-$__#set( $more = "${more}, autoincrement=True" )
+$____#set( $more = "${more}, autoincrement=True" )
 ## NB: 'autoincrement' doesn't work with 'BigInteger' (only Integer)?
-#else
+$__#else
 ## --- if generated value with sequence
-$__#if ( $attribute.hasGeneratedValueSequenceName() )
-$____#set( $seq = "Sequence(${QUOT}${attribute.generatedValueSequenceName}${QUOT}" )
-$____#if( $attribute.hasGeneratedValueInitialValue() )
-$______#set( $seq = "${seq}, start=${attribute.generatedValueInitialValue}")
+$____#if ( $attribute.hasGeneratedValueSequenceName() )
+$______#set( $seq = "Sequence(${QUOT}${attribute.generatedValueSequenceName}${QUOT}" )
+$______#if( $attribute.hasGeneratedValueInitialValue() )
+$________#set( $seq = "${seq}, start=${attribute.generatedValueInitialValue}")
+$______#end
+$______#set( $seq = "${seq})" )## close parenthesis 
+$______#set( $more = "${more}, ${seq}" )
 $____#end
-$____#set( $seq = "${seq})" )## close parenthesis 
-$____#set( $more = "${more}, ${seq}" )
 $__#end
-#end
 ## --- if PK (at then end)
-#if( $attribute.isKeyElement() )
-$__#set( $more = "${more}, primary_key=True" )
-#end
+$__#if( $attribute.isKeyElement() )
+$____#set( $more = "${more}, primary_key=True" )
+$__#end
 #setAttributeOrmType($attribute)
     ${attribute.name} = Column("${attribute.sqlColumnName}", ${attributeOrmType}${more} ) # $sql.databaseName type "$attribute.sqlColumnType"
-#end##foreach
+#end##foreach-end
