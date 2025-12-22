@@ -1,5 +1,6 @@
-#set( $env.language = 'Python' )
 #using( "DB_SCHEMA", "DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT", "DB_NAME" ) 
+#set( $env.language = 'Python' )
+#parse("_include/standard-variables.vm")
 #parse("_include/standard-python-header.vm")
 # Database session 
 
@@ -10,7 +11,6 @@ from sqlalchemy.orm import declarative_base, sessionmaker, Session
 Base = declarative_base()
 
 #----- FastAPI with SQLAlchemy
-#set($TARGET_DATABASE = $fn.get('TARGET_DATABASE', 'SQLite') )
 #if ( $TARGET_DATABASE.equalsIgnoreCase('sqlite') )
 #-- Database configuration for SQLite
 # Storage in a file

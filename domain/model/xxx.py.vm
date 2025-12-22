@@ -1,10 +1,11 @@
 #set( $env.language = 'Python' )
+#parse("_include/standard-variables.vm")
 #parse("_include/standard-macros.vm")
 #parse("_include/standard-python-header.vm")
 # Domain dataclass for entity ${entity.name} 
 # Pydantic BaseModel is preferred to Python dataclass in order to offer automatic ORM conversion
 
-#basicImports($entity.attributes)
+#basicImports($entity.attributes, false)
 from pydantic import BaseModel
 
 class ${entity.name}(BaseModel):

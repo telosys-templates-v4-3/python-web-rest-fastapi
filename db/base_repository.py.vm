@@ -1,0 +1,25 @@
+#set( $env.language = 'Python' )
+#parse("_include/standard-python-header.vm")
+# Database repository ancestor 
+
+from uuid import UUID, uuid4
+
+class BaseRepository:
+    """
+    Base class for all repository implementations.
+    """
+
+    def __init__(self, db_session) -> None:
+        """
+        Constructor for the repository.
+        Initialize the repository with a database session.
+        """
+        self.db = db_session
+
+    @staticmethod
+    def gen_uuid() -> UUID:
+        """
+        Generate a new UUID.
+        """
+        return uuid4()
+

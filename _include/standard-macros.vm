@@ -1,6 +1,6 @@
 ## --- Standard macros definition 
 ## Basic Python imports for Python classes (domain, dto, etc)
-#macro( basicImports $attributes )
+#macro( basicImports $attributes, $uuidGenerator )
 ## 
 $__#set( $decimal = false )
 $__#set( $uuid = false )
@@ -25,8 +25,13 @@ $__#if( ! $temporalTypes.isEmpty() )
 from datetime import $fn.join($temporalTypes, ', ')
 $__#end
 ## 
+# ---- Var uuid = $uuid and uuidGenerator = $uuidGenerator
 $__#if ( $uuid == true )
+$____#if ( $uuidGenerator == true )
+from uuid import UUID, uuid4
+$____#else
 from uuid import UUID
+$____#end
 $__#end
 #end
 ## --- Mapping 'model-type' to 'SQLAlchemy-type'
@@ -56,7 +61,7 @@ $__#end
 ## $__#set( $attributeOrmType = 'zzz')
 $__#set( $attributeOrmType = $ormTypes[${attribute.neutralType}])
 $__#if ( $attributeOrmType == "UUID" )## keep 'UUID' or convert to 'String(36)' depending on target database
-$____#set( $sqlType = $fn.toLowerCase($sql.columnType($attribute)) )
+$____#set( $sqlType = $fn.toLowerCase($env.sql.columnType($attribute)) )
 $____#if ( $sqlType.startsWith("char")  || $sqlType.startsWith("varchar")  || $sqlType.startsWith("text")  )
 $______#set( $attributeOrmType = "String(36)")## Store UUID as a string
 $____#end

@@ -5,7 +5,7 @@
 # REST ROUTER for entity ${entity.name} 
 #set($attributeNames = $fn.attributeNames($entity.attributes) )
 
-#basicImports($entity.keyAttributes)
+#basicImports($entity.keyAttributes, false)
 import logging
 from typing import List
 from fastapi import APIRouter, Response, Depends, status, HTTPException

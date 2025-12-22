@@ -5,18 +5,26 @@
 # Domain dataclass for entity ${entity.name} 
 #set($attributeNames = $fn.attributeNames($entity.attributes) )
 
-#basicImports($entity.keyAttributes)
-from sqlalchemy.orm import Session
+import logging
+#basicImports($entity.keyAttributes, false)
+## from sqlalchemy.orm import Session
 from typing import Optional, List
 
+from db.base_repository import BaseRepository
+from db.db_decorator import db_write_operation, db_read_operation
 from db.records.${entLC}_record import ${recordType}
 from domain.model.${entLC} import ${entity.name}
 
-class ${repositoryType}:
-    def __init__(self, db: Session):
-        self.db = db
+logger = logging.getLogger(__name__)
 
+class ${repositoryType}(BaseRepository):
+#*
+class ${repositoryType}:
+    def __init__(self, db_session: Session):
+        self.db = db_session
+*#
     #--- READ: GET ONE
+    @db_read_operation
     def get_by_pk(self, $fn.argumentsListWithType($entity.keyAttributes)) -> Optional[${entity.name}]:
         record = ( 
             self.db.query(${recordType})
@@ -31,20 +39,47 @@ class ${repositoryType}:
         return None
 
     #--- READ: GET ALL
+    @db_read_operation
     def get_all(self) -> List[${entity.name}]:
         all_records = self.db.query(${recordType}).all()
         # return [${entity.name}.from_orm(record) for record in all_records] # Old (Pydantic v1)
         return [${entity.name}.model_validate(record) for record in all_records] # New (Pydantic v2)
 
     #--- CREATE 
+    @db_write_operation
     def create(self, ${entLC}: ${entity.name}) -> ${entity.name}:
         record = ${recordType}(
 #foreach( $attribute in $entity.attributes )
 $__#if( $foreach.hasNext )#set($end=",")#else#set($end="")#end
+#setAttributeOrmType($attribute)
 $__#if ( $attribute.isGeneratedValue() )
-            # ${attribute.name} = 'generated value' (autoincrement or sequence) => do not use in INSERT 
+##   Attribute is a generated value
+$____#if ( $attribute.type == 'UUID' )
+##     Attribute is a generated UUID
+#*
+$______#if ( $attributeOrmType == 'UUID' )
+            ${attribute.name}=uuid4()${end} # uuid generated value (SQL type = $attribute.sqlColumnType, ORM type = $attributeOrmType) 
+$______#elseif ( $attributeOrmType.startsWith('String') )
+            ${attribute.name}=str(uuid4())${end} # uuid generated value (SQL type = $attribute.sqlColumnType, ORM type = $attributeOrmType) 
+$______#end
+*#
+$______#if ( $attributeOrmType == 'UUID' )
+            ${attribute.name}=self.gen_uuid()${end} # uuid generated value (SQL type = $attribute.sqlColumnType, ORM type = $attributeOrmType) 
+$______#elseif ( $attributeOrmType.startsWith('String') )
+            ${attribute.name}=str(self.gen_uuid())${end} # uuid generated value (SQL type = $attribute.sqlColumnType, ORM type = $attributeOrmType) 
+$______#end
+$____#else
+##     Attribute is not a generated UUID
+            # ${attribute.name} is a 'generated value' (autoincrement or sequence) => do not use in INSERT 
+$____#end
 $__#else
-            ${attribute.name}=${entLC}.${attribute.name}${end}
+##   Attribute is not a generated value
+$____#set($inputValue = "${entLC}.${attribute.name}") 
+$____#if ( $attribute.type == 'UUID' && $attributeOrmType.startsWith('String') )
+##     Attribute is a UUID and must be converted to string => add 'str(..)'
+$______#set($inputValue = "str(${inputValue})") 
+$____#end
+            ${attribute.name}=${inputValue}${end} # (SQL type = $attribute.sqlColumnType, ORM type = $attributeOrmType) 
 $__#end
 #end
         )
@@ -55,10 +90,12 @@ $__#end
         return ${entity.name}.model_validate(record) # New (Pydantic v2)
 
     #--- UPDATE
+    @db_write_operation
     def update(self, ${entLC}: ${entity.name}) -> Optional[${entity.name}]:
         return self.update_by_pk($fn.argumentsListWithGetter(${entLC},$entity.keyAttributes), ${entLC})
     
     #--- UPDATE BY ID 
+    @db_write_operation
     def update_by_pk(self, $fn.argumentsListWithType($entity.keyAttributes), ${entLC}: ${entity.name}) -> Optional[${entity.name}]:
         record = ( 
             self.db.query(${recordType})
@@ -79,6 +116,7 @@ $__#end
         return ${entity.name}.model_validate(record) # New (Pydantic v2)
 
     #--- DELETE
+    @db_write_operation
     def delete_by_pk(self, $fn.argumentsListWithType($entity.keyAttributes)) -> bool:
         record = ( 
             self.db.query(${recordType})

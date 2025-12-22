@@ -1,19 +1,14 @@
 #set( $env.language = 'Python' )
-## --- Database type
-#set($TARGET_DATABASE = $fn.get('TARGET_DATABASE', 'SQLite') )
-## #set( $env.database = 'sqlite' )
-#set( $env.database = $TARGET_DATABASE )
 #parse("_include/standard-variables.vm")
 #parse("_include/standard-macros.vm")
 #parse("_include/standard-python-header.vm")
 # Database record for entity ${entity.name} (used by SqlAchemy ORM)
-#set( $sql = $env.sql )
 
 #sqlalchemyImport($entity.attributes)
 from db.db_session import Base
 
 class ${recordType}(Base):
-#if ( $env.database.equalsIgnoreCase("PostgreSQL") ) 
+#if ( $TARGET_DATABASE.equalsIgnoreCase("PostgreSQL") ) 
 ## For PostgreSQL use lowercase for table names to avoid conflict due to SQLALchemy quoted strings
     __tablename__ = "${entity.sqlTableName.toLowerCase()}"
 #else
@@ -43,5 +38,5 @@ $__#if( $attribute.isKeyElement() )
 $____#set( $more = "${more}, primary_key=True" )
 $__#end
 #setAttributeOrmType($attribute)
-    ${attribute.name} = Column("${attribute.sqlColumnName}", ${attributeOrmType}${more} ) # $sql.databaseName type "$attribute.sqlColumnType"
+    ${attribute.name} = Column("${attribute.sqlColumnName}", ${attributeOrmType}${more} ) # $env.sql.databaseName type "$attribute.sqlColumnType"
 #end##foreach-end

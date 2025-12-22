@@ -12,7 +12,7 @@
 # with FastAPI this metadata is directly reflected in the OpenAPI documentation.
 
 from pydantic import BaseModel, Field
-#basicImports($entity.attributes)
+#basicImports($entity.attributes, false)
 from domain.model.${entLC} import ${entity.name}
 
 class ${dtoType}(BaseModel):

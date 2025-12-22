@@ -3,9 +3,7 @@
 # Web app entry point 
 
 import logging
-from fastapi import FastAPI, Request, APIRouter
-## from sqlalchemy import create_engine
-## from sqlalchemy.orm import sessionmaker, Session
+from fastapi import FastAPI, APIRouter
 
 #foreach( $entity in $model.entities )
 #set($entLC = $entity.name.toLowerCase() )
@@ -15,8 +13,16 @@ from rest.routers.${entLC}_router import router as ${entLC}_router
 # import db_session to call create_all() (database tables creation)
 from db.db_session import Base, engine
 
-# Configure basic logging
-logging.basicConfig(level=logging.INFO)
+#--- Logger configuration
+# level: DEBUG (dev) > INFO (prod) > WARNING > ERROR > CRITICAL
+# filename: output file (eg "app.log"), if none => stderr
+# # logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+    # filename="app.log",
+)
+
 logger = logging.getLogger(__name__)
 
 logger.info("Starting application")

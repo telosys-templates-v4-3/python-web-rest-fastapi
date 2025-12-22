@@ -1,4 +1,9 @@
-## Standard common variables for the current entity
+##### ----- Standard global variables 
+## Target database, if not defined default is 'SQLite'
+#set($TARGET_DATABASE = $fn.get('TARGET_DATABASE', 'SQLite') )
+#set( $env.database = $TARGET_DATABASE )
+##### ----- Standard variables for the current entity (if defined)
+#if ( $fn.isDefined('entity') )
 #set($entLC   = $entity.name.toLowerCase() )
 #set($ent     = $entity.name.toLowerCase() )
 #set($entType = $entity.name )
@@ -13,3 +18,4 @@
 #set($recordType = "${entity.name}Record" )
 #set($repository     = "${entLC}_repository" )
 #set($repositoryType = "${entity.name}Repository" )
+#end
