@@ -25,13 +25,8 @@ $__#if( ! $temporalTypes.isEmpty() )
 from datetime import $fn.join($temporalTypes, ', ')
 $__#end
 ## 
-# ---- Var uuid = $uuid and uuidGenerator = $uuidGenerator
 $__#if ( $uuid == true )
-$____#if ( $uuidGenerator == true )
-from uuid import UUID, uuid4
-$____#else
 from uuid import UUID
-$____#end
 $__#end
 #end
 ## --- Mapping 'model-type' to 'SQLAlchemy-type'

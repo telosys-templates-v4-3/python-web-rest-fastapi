@@ -6,7 +6,7 @@
 #set($attributeNames = $fn.attributeNames($entity.attributes) )
 
 import logging
-#basicImports($entity.keyAttributes, false)
+#basicImports($entity.keyAttributes)
 ## from sqlalchemy.orm import Session
 from typing import Optional, List
 

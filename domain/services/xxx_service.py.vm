@@ -6,7 +6,7 @@
 # The domain service contains business logic related to retrieving entities. 
 # It uses the repository to fetch the data.
 
-#basicImports($entity.keyAttributes, false)
+#basicImports($entity.keyAttributes)
 from typing import List, Optional
 from fastapi import Depends
 from sqlalchemy.orm import Session
