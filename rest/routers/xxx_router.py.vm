@@ -85,7 +85,7 @@ async def get_by_pk(
 #------------------------------------------------------------------------------------
 # CREATE
 #------------------------------------------------------------------------------------
-@router.post("/", 
+@router.post("", 
         summary="Creates a new ${entLC}",
         description="Creates a new ${entLC} and returns the created instance",
         tags=["${entLC}"],

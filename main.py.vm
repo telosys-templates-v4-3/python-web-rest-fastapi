@@ -4,6 +4,7 @@
 
 import logging
 from fastapi import FastAPI, APIRouter
+from fastapi.middleware.cors import CORSMiddleware
 
 #foreach( $entity in $model.entities )
 #set($entLC = $entity.name.toLowerCase() )
@@ -54,6 +55,15 @@ app = FastAPI(
 # Remark: 
 #  In FastAPI, the HTTP listening port is not defined in the Python code.
 #  It is defined by the ASGI server used to run the app (usually Uvicorn or Gunicorn)
+
+# Allow CORS (Cross-Origin Resource Sharing) for all origins, methods and headers
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,  # MUST be False with "*"
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # FastAPI - main router (defines the global API prefix)
 api_router = APIRouter(prefix="$fn.get('REST_API_ROOT', '/api/v1' )")
