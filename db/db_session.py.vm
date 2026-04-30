@@ -13,10 +13,10 @@ Base = declarative_base()
 #----- FastAPI with SQLAlchemy
 #if ( $TARGET_DATABASE.equalsIgnoreCase('sqlite') )
 #-- Database configuration for SQLite
-# Storage in a file
-# DATABASE_URL = "sqlite:///./sqlite.db"
+# Storage in a file (the folder must exist before running the app)
+DATABASE_URL = "sqlite:///./sqlite-db/sqlite-data.db"
 # Storage in memory
-DATABASE_URL = "sqlite:///:memory:"
+# DATABASE_URL = "sqlite:///:memory:"
 engine = create_engine(
     DATABASE_URL, 
     connect_args={"check_same_thread": False}, # required for FastAPI
