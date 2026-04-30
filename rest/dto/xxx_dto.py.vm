@@ -12,10 +12,12 @@
 # with FastAPI this metadata is directly reflected in the OpenAPI documentation.
 
 from pydantic import BaseModel, Field
+from typing import Optional
 #basicImports($entity.attributes)
 from domain.model.${entLC} import ${entity.name}
+from rest.commons.base_dto import BaseDto
 
-class ${dtoType}(BaseModel):
+class ${dtoType}(BaseDto):
 #foreach( $attribute in $entity.attributes )
 $__#set($comment    = "")
 $__#set($minLength  = "")
@@ -25,9 +27,10 @@ $__#set($le  = "")
 
 $__#if( $attribute.isNotNull() )
 $____#set($defaultOrRequired = "...")
-$____#set($comment = "# required")
+$____#set($comment = "# Not Null")
 $__#else
 $____#set($defaultOrRequired = "default=None")
+$____#set($comment = "# Nullable")
 $__#end
 ## 
 $__#if ( $attribute.minLength != "" )
@@ -44,12 +47,13 @@ $____#set($le = ", le=${attribute.maxValue}")
 $__#end
 ##    ${attribute.name}: ${attribute.type} = Field(default=None, title="${attribute.name}", description="")  # '...' => Required
 ##    ${attribute.name}: ${attribute.type} = Field(..., title="${attribute.name}", description="")  # '...' => Required
+$__#if($attribute.isNotNull())#set($acceptNone = "")#else#set($acceptNone = "| None")#end
 $__#if ( $attribute.name == $attribute.type )
 ## If the attribute name ==  "type hint" (eg "date: date") a Pydantic error occurs when calling "Field()" => do not call it
-    ${attribute.name}: ${attribute.type} # cannot use field due to same name and type $comment
+    ${attribute.name}: ${attribute.type} $acceptNone # cannot use field due to same name and type $comment
 $__#else
 ## Standard case : no problem => use "Field()"
-    ${attribute.name}: ${attribute.type} = Field(${defaultOrRequired}, title="${attribute.name}", description=""${minLength}${maxLength}${ge}${le})  $comment
+    ${attribute.name}: ${attribute.type} $acceptNone = Field(${defaultOrRequired}, title="${attribute.name}", description=""${minLength}${maxLength}${ge}${le})  $comment
 $__#end
 #end
 

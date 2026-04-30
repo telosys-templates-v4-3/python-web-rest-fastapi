@@ -1,0 +1,22 @@
+#set( $env.language = 'Python' )
+#parse("_include/standard-python-header.vm")
+from pydantic import BaseModel, model_validator
+
+class BaseDto(BaseModel):
+    """Base DTO that converts empty strings ("") to None for non-string fields."""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _blank_to_none(cls, data):
+        if not isinstance(data, dict):
+            return data
+        # Identify fields whose declared type accepts `str`
+        string_field_names = set()
+        for name, info in cls.model_fields.items():
+            ann = info.annotation
+            if ann is str or str in getattr(ann, "__args__", ()):
+                string_field_names.add(name)
+        return {
+            k: (None if (isinstance(v, str) and v.strip() == "" and k not in string_field_names) else v)
+            for k, v in data.items()
+        }

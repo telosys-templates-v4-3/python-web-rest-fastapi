@@ -11,13 +11,20 @@ from pydantic import BaseModel
 class ${entity.name}(BaseModel):
 #foreach( $attribute in $entity.attributes )
 $__#set( $pkComment = "")
+$__#set( $acceptNone = "")
 $__#if($attribute.isKeyElement()) 
-$____#set( $pkComment = "# Primary Key")
+$____#set( $pkComment = "${pkComment}# Primary Key ")
 $__#end
 $__#if($attribute.isGeneratedValue()) 
-$____#set( $pkComment = "${pkComment} # Generated Value (${attribute.generatedValueStrategy})")
+$____#set( $pkComment = "${pkComment}# Generated Value (${attribute.generatedValueStrategy}) ")
 $__#end
-    ${attribute.name}: $attribute.type $pkComment
+$__#if($attribute.isNotNull()) 
+$____#set( $pkComment = "${pkComment}# Not Null ")
+$__#else 
+$____#set( $pkComment = "${pkComment}# Nullable ")
+$____#set( $acceptNone = "| None")
+$__#end
+    ${attribute.name}: $attribute.type $acceptNone $pkComment
 #end
 
     # Old (Pydantic v1)
