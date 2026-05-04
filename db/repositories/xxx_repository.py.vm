@@ -93,11 +93,13 @@ $__#end
     #--- UPDATE
     @db_write_operation
     def update(self, ${entLC}: ${entity.name}) -> Optional[${entity.name}]:
+        logger.debug(f"update($fn.argumentsList($entity.keyAttributes))")
         return self.update_by_pk($fn.argumentsListWithGetter(${entLC},$entity.keyAttributes), ${entLC})
     
     #--- UPDATE BY ID 
     @db_write_operation
     def update_by_pk(self, $fn.argumentsListWithType($entity.keyAttributes), ${entLC}: ${entity.name}) -> Optional[${entity.name}]:
+        logger.debug(f"update_by_pk($fn.argumentsList($entity.keyAttributes))")
         record = ( 
             self.db.query(${recordType})
 #foreach( $attribute in $entity.keyAttributes )
