@@ -63,6 +63,7 @@ app.add_middleware(
     allow_credentials=False,  # MUST be False with "*"
     allow_methods=["*"],
     allow_headers=["*"],
+    max_age=3600,  # Cache preflight OPTIONS response for 1 hour (default is 600s)
 )
 
 # FastAPI - main router (defines the global API prefix)
