@@ -26,7 +26,7 @@ from datetime import $fn.join($temporalTypes, ', ')
 $__#end
 ## 
 $__#if ( $uuid == true )
-from uuid import UUID
+from uuid import UUID, uuid4
 $__#end
 #end
 ## --- Mapping 'model-type' to 'SQLAlchemy-type'
