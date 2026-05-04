@@ -8,6 +8,9 @@ class BaseRepository:
     """
     Base class for all repository implementations.
     """
+    # Set to True if the database has a native UUID type (e.g. PostgreSQL)
+    # Set to False if the database stores UUIDs as strings (e.g. SQLite)
+    DB_NATIVE_UUID: bool = False    
 
     def __init__(self, db_session) -> None:
         """
@@ -23,3 +26,13 @@ class BaseRepository:
         """
         return uuid4()
 
+    @classmethod
+    def to_uuid_db_value(cls, v: UUID | None) -> str | UUID | None:
+        """
+        Convert a UUID domain value to a DB-safe value.
+        - If DB_NATIVE_UUID is False (SQLite): returns str(v) or None
+        - If DB_NATIVE_UUID is True (PostgreSQL): returns UUID as-is or None
+        """
+        if v is None:
+            return None
+        return v if cls.DB_NATIVE_UUID else str(v)

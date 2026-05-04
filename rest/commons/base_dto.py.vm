@@ -10,13 +10,16 @@ class BaseDto(BaseModel):
     def _blank_to_none(cls, data):
         if not isinstance(data, dict):
             return data
-        # Identify fields whose declared type accepts `str`
+        # Step 1: build a set of field names that accept `str`
         string_field_names = set()
         for name, info in cls.model_fields.items():
             ann = info.annotation
             if ann is str or str in getattr(ann, "__args__", ()):
                 string_field_names.add(name)
         return {
+            # Step 2: for every key/value in the incoming dict...
+            # "" is preserved for string fields (an empty string is a valid string value), 
+            #    and converted to None for everything else (int, float, bool, list, uuid, etc.)
             k: (None if (isinstance(v, str) and v.strip() == "" and k not in string_field_names) else v)
             for k, v in data.items()
         }

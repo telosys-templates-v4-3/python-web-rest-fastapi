@@ -76,8 +76,9 @@ $__#else
 ##   Attribute is not a generated value
 $____#set($inputValue = "${entLC}.${attribute.name}") 
 $____#if ( $attribute.type == 'UUID' && $attributeOrmType.startsWith('String') )
-##     Attribute is a UUID and must be converted to string => add 'str(..)'
-$______#set($inputValue = "str(${inputValue})") 
+##     Attribute is a UUID and must be converted to the db type value (string or UUID)
+##$______#set($inputValue = "str(${inputValue})") 
+$______#set($inputValue = "self.to_uuid_db_value(${inputValue})" )
 $____#end
             ${attribute.name}=${inputValue}${end} # (SQL type = $attribute.sqlColumnType, ORM type = $attributeOrmType) 
 $__#end
@@ -108,7 +109,11 @@ $__#end
             return None
         # Update fields
 #foreach( $attribute in $entity.nonKeyAttributes )
+$__#if ( $attribute.type == 'UUID' && $attributeOrmType.startsWith('String') )
+        record.$attribute.name = self.to_uuid_db_value(${entLC}.${attribute.name}) # UUID type conv to String for DB
+$__#else
         record.$attribute.name = ${entLC}.$attribute.name
+$__#end
 #end
         self.db.commit()
         self.db.refresh(record)
