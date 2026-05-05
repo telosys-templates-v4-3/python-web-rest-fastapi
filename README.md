@@ -1,6 +1,6 @@
 # python-web-rest-fastapi
 
-Telosys templates for Python REST web application based on **FastAPI framework**.
+Telosys bundle of templates for Python REST web application based on **FastAPI framework** and **SQLAlchemy** .
 
 This bundle provides templates to generate a REST controller for each entity.
 
