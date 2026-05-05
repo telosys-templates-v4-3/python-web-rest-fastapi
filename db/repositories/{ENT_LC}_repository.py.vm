@@ -118,6 +118,7 @@ $__#end
             return None
         # Update fields
 #foreach( $attribute in $entity.nonKeyAttributes )
+#setAttributeOrmType($attribute)
 $__#if ( $attribute.type == 'UUID' && $attributeOrmType.startsWith('String') )
         record.$attribute.name = self.to_uuid_db_value(${entLC}.${attribute.name}) # UUID type conv to String for DB
 $__#else
