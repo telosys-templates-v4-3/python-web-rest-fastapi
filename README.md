@@ -43,16 +43,6 @@ This bundle requires the following variables :
   - DB_PORT
   - DB_NAME
 
-## Dependencies : 
-pip install "fastapi[standard]"
-pip install sqlalchemy
-
-For PostgreSQL a driver is needed :
-- For sync SQLAlchemy:   pip install psycopg[binary]
-- For async SQLAlchemy:  pip install psycopg[async]
-
-
-## Launching the application with Uvicorn
-> fastapi dev main.py  
-> Server URL: http://127.0.0.1:8000  
-> API docs:   http://127.0.0.1:8000/docs   
+## Generated application 
+To install the required Python dependencies and run the generated application
+see the generated README.md file in the project folder after code generation.
