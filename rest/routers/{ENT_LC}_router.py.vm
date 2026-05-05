@@ -46,7 +46,6 @@ async def get(
     # domain to dto conversion
     result = []
     for o in all_list:
-        # result.append(${dtoType}(id=o.id, name=o.name, price=o.price))
         result.append(${dtoType}($fn.joinWithTransformation($attributeNames, ", ", "%=o.%")))
     return result
 
@@ -75,11 +74,9 @@ async def get_by_pk(
     r = ${service}.get_by_pk($fn.argumentsList($entity.keyAttributes))
     if r is None:
         # If nothing found, return 404 status
-        # OLD return Response(status_code=404)
         raise HTTPException(status_code=404, detail="${entity.name} not found")
     else:
         # If something found, return the payload
-        # return ${dtoType}(id=r.id, name=r.name, price=r.price)
         return ${dtoType}($fn.joinWithTransformation($attributeNames, ", ", "%=r.%") )
 
 #------------------------------------------------------------------------------------

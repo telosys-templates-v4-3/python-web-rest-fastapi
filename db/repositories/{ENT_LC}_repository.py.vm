@@ -41,16 +41,14 @@ $__#end
             .first()
             )
         if record:
-            # return ${entity.name}.from_orm(record) # Old (Pydantic v1)
-            return ${entity.name}.model_validate(record) # New (Pydantic v2)
+            return ${entity.name}.model_validate(record) # (Pydantic v2)
         return None
 
     #--- READ: GET ALL
     @db_read_operation
     def get_all(self) -> List[${entity.name}]:
         all_records = self.db.query(${recordType}).all()
-        # return [${entity.name}.from_orm(record) for record in all_records] # Old (Pydantic v1)
-        return [${entity.name}.model_validate(record) for record in all_records] # New (Pydantic v2)
+        return [${entity.name}.model_validate(record) for record in all_records] # (Pydantic v2)
 
     #--- CREATE 
     @db_write_operation
@@ -86,8 +84,7 @@ $__#end
         self.db.add(record)
         self.db.commit()
         self.db.refresh(record)
-        # return ${entity.name}.from_orm(record) # Old (Pydantic v1)
-        return ${entity.name}.model_validate(record) # New (Pydantic v2)
+        return ${entity.name}.model_validate(record) # (Pydantic v2)
 
     #--- UPDATE
     @db_write_operation
@@ -127,8 +124,7 @@ $__#end
 #end
         self.db.commit()
         self.db.refresh(record)
-        # return ${entity.name}.from_orm(record) # Old (Pydantic v1)
-        return ${entity.name}.model_validate(record) # New (Pydantic v2)
+        return ${entity.name}.model_validate(record) # (Pydantic v2)
 
     #--- DELETE
     @db_write_operation

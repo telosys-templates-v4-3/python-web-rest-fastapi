@@ -10,7 +10,7 @@ To launch the server after code generation, run "fastapi dev main.py"
 - Target language: **Python** 3.10 or higher (with type hints)  
 - Layers:  REST - Domain - Database (ORM)
 - Technical stack:  
-  - Validation: **Pydantic**     
+  - Validation: **Pydantic v2**     
   - REST: **FastAPI**  
   - ORM: **SQLAlchemy**   
   - Database: **PostgreSQL** or **SQLite** (for testing) 

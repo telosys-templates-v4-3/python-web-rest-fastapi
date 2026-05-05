@@ -15,7 +15,7 @@ If you don't have pip installed, you can follow the instructions here: https://p
 Ensure that pip is up to date by running: ```pip install --upgrade pip```
 
 - Install dependencies:
-  - Install FastAPI ('standard' for development) using pip:
+  - Install FastAPI and Pydantic v2 ('standard' for development) using pip:
     ```pip install "fastapi[standard]"```
   - Install SQLAlchemy (for database access) using pip:
     ```pip install sqlalchemy```

@@ -27,11 +27,7 @@ $__#end
     ${attribute.name}: $attribute.type $acceptNone $pkComment
 #end
 
-    # Old (Pydantic v1)
-    # class Config:
-    #    orm_mode = True  # Enable 'from_orm' conversion
-    
-    # New (Pydantic v2)
+    # New config (Pydantic v2)
     model_config = {
         "from_attributes": True
     }
