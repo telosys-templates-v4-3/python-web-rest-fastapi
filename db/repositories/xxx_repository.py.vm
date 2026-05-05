@@ -4,7 +4,13 @@
 #parse("_include/standard-python-header.vm")
 # Domain dataclass for entity ${entity.name} 
 #set($attributeNames = $fn.attributeNames($entity.attributes) )
-
+#macro(repeat $string $times $separator)
+$__#set($repeatResult = "")
+$__#foreach($i in [1..$times])
+$____#if($i > 1)#set($repeatResult = "$repeatResult$separator")#end
+$____#set($repeatResult = "$repeatResult$string")
+$__#end
+#end
 import logging
 #basicImports($entity.keyAttributes)
 ## from sqlalchemy.orm import Session
@@ -18,18 +24,19 @@ from domain.model.${entLC} import ${entity.name}
 logger = logging.getLogger(__name__)
 
 class ${repositoryType}(BaseRepository):
-#*
-class ${repositoryType}:
-    def __init__(self, db_session: Session):
-        self.db = db_session
-*#
-    #--- READ: GET ONE
+
+    #--- READ: GET ONE BY PK
     @db_read_operation
     def get_by_pk(self, $fn.argumentsListWithType($entity.keyAttributes)) -> Optional[${entity.name}]:
         record = ( 
             self.db.query(${recordType})
 #foreach( $attribute in $entity.keyAttributes )
+#setAttributeOrmType($attribute)
+$__#if ( $attribute.type == 'UUID' && $attributeOrmType.startsWith('String') )
+            .filter(${recordType}.${attribute.name} == str(${attribute.name})) # UUID is stored as TEXT => convert to string
+$__#else
             .filter(${recordType}.${attribute.name} == ${attribute.name})
+$__#end
 #end
             .first()
             )
@@ -56,13 +63,6 @@ $__#if ( $attribute.isGeneratedValue() )
 ##   Attribute is a generated value
 $____#if ( $attribute.type == 'UUID' )
 ##     Attribute is a generated UUID
-#*
-$______#if ( $attributeOrmType == 'UUID' )
-            ${attribute.name}=uuid4()${end} # uuid generated value (SQL type = $attribute.sqlColumnType, ORM type = $attributeOrmType) 
-$______#elseif ( $attributeOrmType.startsWith('String') )
-            ${attribute.name}=str(uuid4())${end} # uuid generated value (SQL type = $attribute.sqlColumnType, ORM type = $attributeOrmType) 
-$______#end
-*#
 $______#if ( $attributeOrmType == 'UUID' )
             ${attribute.name}=self.gen_uuid()${end} # uuid generated value (SQL type = $attribute.sqlColumnType, ORM type = $attributeOrmType) 
 $______#elseif ( $attributeOrmType.startsWith('String') )
@@ -77,7 +77,6 @@ $__#else
 $____#set($inputValue = "${entLC}.${attribute.name}") 
 $____#if ( $attribute.type == 'UUID' && $attributeOrmType.startsWith('String') )
 ##     Attribute is a UUID and must be converted to the db type value (string or UUID)
-##$______#set($inputValue = "str(${inputValue})") 
 $______#set($inputValue = "self.to_uuid_db_value(${inputValue})" )
 $____#end
             ${attribute.name}=${inputValue}${end} # (SQL type = $attribute.sqlColumnType, ORM type = $attributeOrmType) 
@@ -93,21 +92,29 @@ $__#end
     #--- UPDATE
     @db_write_operation
     def update(self, ${entLC}: ${entity.name}) -> Optional[${entity.name}]:
-        logger.debug(f"update($fn.argumentsList($entity.keyAttributes))")
+#repeat("%s", $entity.keyAttributesCount, ",")
+        logger.debug(f"update($repeatResult)", $fn.argumentsListWithGetter(${entLC},$entity.keyAttributes))
         return self.update_by_pk($fn.argumentsListWithGetter(${entLC},$entity.keyAttributes), ${entLC})
     
     #--- UPDATE BY ID 
     @db_write_operation
     def update_by_pk(self, $fn.argumentsListWithType($entity.keyAttributes), ${entLC}: ${entity.name}) -> Optional[${entity.name}]:
-        logger.debug(f"update_by_pk($fn.argumentsList($entity.keyAttributes))")
+#repeat("%s", $entity.keyAttributesCount, ",")
+        logger.debug(f"update_by_pk($repeatResult)", $fn.argumentsList($entity.keyAttributes))
         record = ( 
             self.db.query(${recordType})
 #foreach( $attribute in $entity.keyAttributes )
+#setAttributeOrmType($attribute)
+$__#if ( $attribute.type == 'UUID' && $attributeOrmType.startsWith('String') )
+            .filter(${recordType}.${attribute.name} == str(${attribute.name})) # UUID is stored as TEXT => convert to string
+$__#else         
             .filter(${recordType}.${attribute.name} == ${attribute.name})
+$__#end
 #end
             .first()
             )        
         if not record:
+            logger.debug("Not found")
             return None
         # Update fields
 #foreach( $attribute in $entity.nonKeyAttributes )
