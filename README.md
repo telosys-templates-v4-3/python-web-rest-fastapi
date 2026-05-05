@@ -34,14 +34,15 @@ To launch the server after code generation, run "fastapi dev main.py"
 
 ## Variables : 
 This bundle requires the following variables :
-- REST_API_ROOT  ( example : ProjectVariable.REST_API_ROOT=/myapi/v2 )  default= /api/v1
+- REST_API_ROOT  (default is "/api/v1")
+- TARGET_DATABASE = PostgreSQL or SQLite (default is SQLite)
 - For a PostgreSQL database:
-  - DB_SCHEMA
   - DB_USER
   - DB_PASSWORD
   - DB_HOST
   - DB_PORT
   - DB_NAME
+  - DB_SCHEMA
 
 ## Generated application 
 To install the required Python dependencies and run the generated application

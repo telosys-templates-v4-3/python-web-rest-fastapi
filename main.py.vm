@@ -48,9 +48,9 @@ print("--- SQLAlchemy : create_all(engine) - Done.")
 # --- REST API application and routers 
 # FastAPI application variable ("app" by convention)
 app = FastAPI(
-    title = "My REST API application",
+    title = "$fn.get('APP_NAME', 'Python REST backend')",
     description = "REST API application based on FastAPI.",
-    version = "0.0.1"
+    version = "$fn.get('APP_VERSION', '1.0.0')"
 )
 # Remark: 
 #  In FastAPI, the HTTP listening port is not defined in the Python code.
