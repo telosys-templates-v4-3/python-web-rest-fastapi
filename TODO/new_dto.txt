@@ -1,0 +1,22 @@
+class _ItemDtoBase(BaseModel):
+    # All fields except Primary Key
+    name: str
+    description: str
+
+class ItemDtoRead(_ItemDtoBase):
+    # with Primary Key 
+    id: int
+
+class ItemDtoCreate(_ItemDtoBase):
+    # with Primary Key (required)
+    # or without Primary Key is auto-generated
+    id: int 
+
+class ItemDtoFullUpdate(_ItemDtoBase):
+    # without Primary Key (in URL) (PUT)
+    pass  
+
+class ItemDtoPartialUpdate(BaseModel):
+    # Only updatable fields (PK in URL) (PATCH)
+    name: Optional[str] = None
+    description: Optional[str] = None
