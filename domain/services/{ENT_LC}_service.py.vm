@@ -10,7 +10,9 @@
 from typing import List, Optional
 from fastapi import Depends
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
+from domain.commons.exceptions import DatabaseIntegrityError
 from domain.model.${entLC} import ${entity.name}
 from db.db_session import get_db
 from db.repositories.${entLC}_repository import $repositoryType
@@ -39,7 +41,10 @@ class $serviceType:
 
     # Create
     def create(self, ${entLC}: ${entity.name}) -> ${entity.name}:
-        return self.${repository}.create(${entLC})
+        try:
+            return self.${repository}.create(${entLC})
+        except IntegrityError as e:
+            raise DatabaseIntegrityError(str(e.orig)) from e
 
     # Update 
     def update(self, ${entLC}: ${entity.name}) -> Optional[${entity.name}]:
@@ -59,4 +64,3 @@ class $serviceType:
 def get_${service}(db: Session = Depends(get_db)) -> ${serviceType}:
     repo = ${repositoryType}(db)
     return ${serviceType}(repo)
-

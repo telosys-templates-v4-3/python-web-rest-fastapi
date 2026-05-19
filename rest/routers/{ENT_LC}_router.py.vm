@@ -9,6 +9,8 @@
 import logging
 from typing import List
 from fastapi import APIRouter, Response, Depends, status, HTTPException
+
+from domain.commons.exceptions import DatabaseIntegrityError
 from domain.services.${service} import ${entity.name}Service, get_${entLC}_service
 from rest.dto.${dto} import ${dtoType}
 
@@ -88,7 +90,7 @@ async def get_by_pk(
         tags=["${entLC}"],
         responses={
             200: {"description": "OK."},
-            404: {"description": "Not found."}, 
+            409: {"description": "Conflict."}, 
         })
 async def create(
     ${dto}: ${dtoType},
@@ -99,13 +101,13 @@ async def create(
     ) -> ${dtoType}:
     #-----
     ${ent} = ${dto}.to_domain()   # conversion rest DTO to domain entity
-    r = ${service}.create(${ent})
-    if r is None:
-        # No supposed to happen
-        raise HTTPException(status_code=409, detail="${entity.name} not found") 
-    else:
+    try:
+        r = ${service}.create(${ent})
         # Created : return the payload
         return ${dtoType}($fn.joinWithTransformation($attributeNames, ", ", "%=r.%") )
+    except DatabaseIntegrityError as e :
+        # Http Status 409 Conflict : when a database integrity constraint is violated (e.g. unique constraint, foreign key constraint, etc.)
+        raise HTTPException(status_code=409, detail=e.message)
 
 #------------------------------------------------------------------------------------
 # DELETE

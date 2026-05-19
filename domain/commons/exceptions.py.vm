@@ -1,0 +1,6 @@
+#parse("_include/standard-python-header.vm")
+class DatabaseIntegrityError(Exception):
+    """Raised when an operation violates a database integrity constraint"""
+    def __init__(self, message: str = "database integrity error"):
+        super().__init__(message)
+        self.message = message
